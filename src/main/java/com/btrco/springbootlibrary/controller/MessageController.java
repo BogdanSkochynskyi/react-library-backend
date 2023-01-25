@@ -1,6 +1,7 @@
 package com.btrco.springbootlibrary.controller;
 
 import com.btrco.springbootlibrary.entitiy.Message;
+import com.btrco.springbootlibrary.requestModels.AdminQuestionRequest;
 import com.btrco.springbootlibrary.requestModels.ReviewRequest;
 import com.btrco.springbootlibrary.service.MessageService;
 import com.btrco.springbootlibrary.service.ReviewService;
@@ -27,4 +28,16 @@ public class MessageController {
         }
         messageService.postMessage(messageRequest, userEmail);
     }
+
+    @PutMapping("/secure/admin/message")
+    public void putMessage(@RequestHeader(value="Authorization") String token,
+                           @RequestBody AdminQuestionRequest adminQuestionRequest) throws Exception {
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
+        if (admin == null || !admin.equals("admin")) {
+            throw new Exception("Administration page only.");
+        }
+        messageService.putMessage(adminQuestionRequest, userEmail);
+    }
+
 }
